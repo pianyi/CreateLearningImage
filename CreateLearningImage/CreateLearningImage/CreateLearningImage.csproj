@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>False</UseWindowsForms>
+    <StartupObject>CreateLearningImage.App</StartupObject>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="MahApps.Metro" Version="2.4.9" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
+    <PackageReference Include="MaterialDesignColors" Version="2.1.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.7.0" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.6" />
+    <PackageReference Include="Prism.Unity" Version="8.1.97" />
+    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="NLog" Version="5.1.1" />
+    <PackageReference Include="ReactiveProperty" Version="8.2.0" />
+    <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
+  </ItemGroup>
+  
+    <ItemGroup>
+    <ProjectReference Include="..\Modules\CreateLearningImage.Modules.DistributionDialog\CreateLearningImage.Modules.DistributionDialog.csproj" />
+    <ProjectReference Include="..\Modules\CreateLearningImage.Modules.Main\CreateLearningImage.Modules.Main.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

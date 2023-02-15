@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{01989482-EEE6-4DE3-9DC9-D93C48A004C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{F5C42F01-18BD-485D-85F6-640799E9F611}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Services", "CreateLearningImage\Services\CreateLearningImage.Services\CreateLearningImage.Services.csproj", "{3B38A7D1-0A03-428E-AD00-A1F80C95061A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage", "CreateLearningImage\CreateLearningImage\CreateLearningImage.csproj", "{D49CC1D0-94DA-45F7-8454-9D68288F0AFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Core", "CreateLearningImage\CreateLearningImage.Core\CreateLearningImage.Core.csproj", "{3220E5E5-8A95-4E6F-B0FE-D40B023D3B10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrismExpansion", "CreateLearningImage\PrismExpansion\PrismExpansion.csproj", "{57E4E275-F2D2-472E-95D9-99BFC98B9771}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Modules.Main", "CreateLearningImage\Modules\CreateLearningImage.Modules.Main\CreateLearningImage.Modules.Main.csproj", "{C2744AD9-9468-49BE-B22E-623DC4F3A12B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{62C6021A-E185-44E3-B310-AC7E41E2EC2B} = {62C6021A-E185-44E3-B310-AC7E41E2EC2B}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Modules.DistributionDialog", "CreateLearningImage\Modules\CreateLearningImage.Modules.DistributionDialog\CreateLearningImage.Modules.DistributionDialog.csproj", "{62C6021A-E185-44E3-B310-AC7E41E2EC2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateLearningImage.Datas", "CreateLearningImage\Services\CreateLearningImage.Datas\CreateLearningImage.Datas.csproj", "{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B38A7D1-0A03-428E-AD00-A1F80C95061A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B38A7D1-0A03-428E-AD00-A1F80C95061A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B38A7D1-0A03-428E-AD00-A1F80C95061A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B38A7D1-0A03-428E-AD00-A1F80C95061A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D49CC1D0-94DA-45F7-8454-9D68288F0AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D49CC1D0-94DA-45F7-8454-9D68288F0AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D49CC1D0-94DA-45F7-8454-9D68288F0AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D49CC1D0-94DA-45F7-8454-9D68288F0AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3220E5E5-8A95-4E6F-B0FE-D40B023D3B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3220E5E5-8A95-4E6F-B0FE-D40B023D3B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3220E5E5-8A95-4E6F-B0FE-D40B023D3B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3220E5E5-8A95-4E6F-B0FE-D40B023D3B10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57E4E275-F2D2-472E-95D9-99BFC98B9771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57E4E275-F2D2-472E-95D9-99BFC98B9771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57E4E275-F2D2-472E-95D9-99BFC98B9771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57E4E275-F2D2-472E-95D9-99BFC98B9771}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2744AD9-9468-49BE-B22E-623DC4F3A12B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2744AD9-9468-49BE-B22E-623DC4F3A12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2744AD9-9468-49BE-B22E-623DC4F3A12B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2744AD9-9468-49BE-B22E-623DC4F3A12B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62C6021A-E185-44E3-B310-AC7E41E2EC2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C6021A-E185-44E3-B310-AC7E41E2EC2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62C6021A-E185-44E3-B310-AC7E41E2EC2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62C6021A-E185-44E3-B310-AC7E41E2EC2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B38A7D1-0A03-428E-AD00-A1F80C95061A} = {F5C42F01-18BD-485D-85F6-640799E9F611}
+		{C2744AD9-9468-49BE-B22E-623DC4F3A12B} = {01989482-EEE6-4DE3-9DC9-D93C48A004C8}
+		{62C6021A-E185-44E3-B310-AC7E41E2EC2B} = {01989482-EEE6-4DE3-9DC9-D93C48A004C8}
+		{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A} = {F5C42F01-18BD-485D-85F6-640799E9F611}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6515E4D1-DA24-49C6-B895-1B4A10AC9272}
+	EndGlobalSection
+EndGlobal

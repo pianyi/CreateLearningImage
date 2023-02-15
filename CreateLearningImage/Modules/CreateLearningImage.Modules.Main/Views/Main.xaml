@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="CreateLearningImage.Modules.Main.Views.Main"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:local="clr-namespace:CreateLearningImage.Modules.Main.Views"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:prism="http://prismlibrary.com/"
+             metro:DialogParticipation.Register="{Binding}"
+             prism:ViewModelLocator.AutoWireViewModel="True" >
+    
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True">
+            <TextBlock Text="Movie path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
+                    Command="{Binding BrowseFileCommand}" 
+                    CommandParameter="0"/>
+
+            <TextBox Text="{Binding ImageFilePath.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
+        </DockPanel>
+
+        <DockPanel Grid.Row="1" Grid.Column="0" LastChildFill="True">
+            <TextBlock Text="Lbpcascade path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
+                    Command="{Binding BrowseFileCommand}"
+                    CommandParameter="1"/>
+
+            <TextBox Text="{Binding Lbpcascade.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
+        </DockPanel>
+
+        <DockPanel Grid.Row="2" Grid.Column="0" LastChildFill="True">
+            <TextBlock Text="Output path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
+                    Command="{Binding BrowseDirectoryCommand}"
+                    CommandParameter="2"/>
+
+            <TextBox Text="{Binding Output.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
+        </DockPanel>
+
+        <Image Grid.Row="3" Grid.Column="0" Source="{Binding Images.Value}"/>
+
+        <DockPanel Grid.Row="4" Grid.Column="0">
+            <ToggleButton DockPanel.Dock="Left"
+                          Width="48"
+                          Height="48"
+                          Margin="4"
+                          IsChecked="{Binding IsStart.Value}"
+                          Command="{Binding StartStopCommand}"
+                          Style="{DynamicResource MahApps.Styles.ToggleButton.Circle}">
+                <iconPacks:PackIconFontisto Width="24"
+                                            Height="24"
+                                            Kind="{Binding StartStopButtonName.Value}"/>
+            </ToggleButton>
+
+            <Button DockPanel.Dock="Right" Content="Distribution"
+                    Command="{Binding DistributionCommand}"/>
+            
+            <!-- ダミー -->
+            <TextBlock />
+            <!--
+        <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="90"
+                Content="{Binding StartStopButtonName.Value}" 
+                Command="{Binding StartStopCommand}"/>
+        -->
+        </DockPanel>
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="CreateLearningImage.Modules.DistributionDialog.Views.DistributionDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CreateLearningImage.Modules.DistributionDialog.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="550"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:prism="http://prismlibrary.com/"
+             metro:DialogParticipation.Register="{Binding}"
+             prism:ViewModelLocator.AutoWireViewModel="True" >
+
+    <prism:Dialog.WindowStyle>
+        <Style TargetType="{x:Type Window}">
+            <Setter Property="prism:Dialog.WindowStartupLocation" Value="CenterOwner"/>
+            <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+            <Setter Property="ShowInTaskbar" Value="True"/>
+            <Setter Property="Width" Value="550"/>
+            <Setter Property="Height" Value="350"/>
+            <Setter Property="SizeToContent" Value="Manual"/>
+            <Setter Property="Title" Value="{Binding Title}"/>
+        </Style>
+    </prism:Dialog.WindowStyle>
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Up" Command="{Binding UpCommand}" />
+        <KeyBinding Key="Down" Command="{Binding DownCommand}" />
+        <KeyBinding Key="Left" Command="{Binding LeftCommand}" />
+        <KeyBinding Key="Right" Command="{Binding RightCommand}" />
+        <KeyBinding Key="NumPad0" Command="{Binding NumberCommand}" CommandParameter="0"/>
+        <KeyBinding Key="NumPad1" Command="{Binding NumberCommand}" CommandParameter="1"/>
+        <KeyBinding Key="NumPad2" Command="{Binding NumberCommand}" CommandParameter="2"/>
+        <KeyBinding Key="NumPad3" Command="{Binding NumberCommand}" CommandParameter="3"/>
+        <KeyBinding Key="NumPad4" Command="{Binding NumberCommand}" CommandParameter="4"/>
+        <KeyBinding Key="NumPad5" Command="{Binding NumberCommand}" CommandParameter="5"/>
+        <KeyBinding Key="NumPad6" Command="{Binding NumberCommand}" CommandParameter="6"/>
+        <KeyBinding Key="NumPad7" Command="{Binding NumberCommand}" CommandParameter="7"/>
+        <KeyBinding Key="NumPad8" Command="{Binding NumberCommand}" CommandParameter="8"/>
+        <KeyBinding Key="NumPad9" Command="{Binding NumberCommand}" CommandParameter="9"/>
+    </UserControl.InputBindings>
+    
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Margin="5">
+                <Run Text="{Binding PageNumber.Value}"/> / <Run Text="{Binding MaxPageNumber.Value}"/>
+            </TextBlock>
+        </StackPanel>
+
+        <Image Grid.Row="1" Grid.Column="0" Source="{Binding Images.Value}"/>
+
+        <DockPanel Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
+            <Button Width="80" Content="Prev" Margin="5" DockPanel.Dock="Left"
+                    Command="{Binding PrevCommand}"/>
+            <Button Width="80" Content="Next" Margin="5" DockPanel.Dock="Left"
+                    Command="{Binding NextCommand}"/>
+            <ComboBox Width="150" Margin="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" DockPanel.Dock="Left"
+                      DisplayMemberPath="DisplayMember.Value"
+                      SelectedValuePath="SelectedValue"
+                      ItemsSource="{Binding OutputInfoList}"
+                      SelectedValue="{Binding SelectedOutputInfo.Value, Mode=TwoWay}"
+                      SelectedIndex="{Binding SelectedIndex.Value, Mode=TwoWay}">
+            </ComboBox>
+            <Button Width="80" Content="Append" Margin="5" DockPanel.Dock="Left"
+                    Command="{Binding AppendDirectoryCommand}"/>
+        </DockPanel>
+    </Grid>
+
+</UserControl>

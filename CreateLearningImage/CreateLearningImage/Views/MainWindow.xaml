@@ -1,0 +1,15 @@
+﻿<metro:MetroWindow x:Class="CreateLearningImage.Views.MainWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:prism="http://prismlibrary.com/"
+                   prism:ViewModelLocator.AutoWireViewModel="True"
+                   xmlns:core="clr-namespace:CreateLearningImage.Core;assembly=CreateLearningImage.Core"
+                   metro:DialogParticipation.Register="{Binding}"
+                   Title="{Binding Title.Value}" Height="350" Width="525" >
+    
+    <Grid>
+        <ContentControl prism:RegionManager.RegionName="{x:Static core:Constants.ContentRegion}" />
+    </Grid>
+
+</metro:MetroWindow>
