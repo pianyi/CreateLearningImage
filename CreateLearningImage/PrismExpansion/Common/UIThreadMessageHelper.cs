@@ -13,7 +13,7 @@ namespace PrismExpansion.Common
         /// <remarks>VBのDoEventsと同じ。本来は別スレッド化で対応するため、可能な限り使わない方が良い。</remarks>
         public static void DoEvents()
         {
-            DispatcherFrame frame = new DispatcherFrame();
+            DispatcherFrame frame = new();
             var callback = new DispatcherOperationCallback(obj =>
             {
                 ((DispatcherFrame)obj).Continue = false;

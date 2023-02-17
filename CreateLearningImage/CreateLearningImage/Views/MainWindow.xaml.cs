@@ -2,9 +2,8 @@
 using MahApps.Metro.Controls;
 using NLog;
 using Prism.Events;
-using System.ComponentModel;
 using System;
-using Prism.Services.Dialogs;
+using System.ComponentModel;
 using Unity;
 
 namespace CreateLearningImage.Views

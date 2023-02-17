@@ -149,7 +149,7 @@ namespace PrismExpansion.Services.Dialogs
         /// <param name="callback">戻り値</param>
         /// <param name="isModal">true:モーダルダイアログ、false:モーダレスダイアログ</param>
         /// <param name="windowName">The name of the hosting window registered with the IContainerRegistry.</param>
-        void ShowDialogInternal(string name, IDialogParameters? parameters, Action<IDialogResult>? callback, bool isModal, string? windowName = null)
+        private void ShowDialogInternal(string name, IDialogParameters? parameters, Action<IDialogResult>? callback, bool isModal, string? windowName = null)
         {
             if (parameters == null)
             {
@@ -226,15 +226,15 @@ namespace PrismExpansion.Services.Dialogs
         /// <param name="dialogName"></param>
         /// <param name="window"></param>
         /// <param name="parameters"></param>
-        void ConfigureDialogWindowContent(string dialogName, IDialogWindow window, IDialogParameters parameters)
+        private void ConfigureDialogWindowContent(string dialogName, IDialogWindow window, IDialogParameters parameters)
         {
             var content = _containerExtension.Resolve<object>(dialogName);
-            if (!(content is FrameworkElement dialogContent))
+            if (content is not FrameworkElement dialogContent)
             {
                 throw new NullReferenceException("A dialog's content must be a FrameworkElement");
             }
 
-            if (!(dialogContent.DataContext is IDialogAware viewModel))
+            if (dialogContent.DataContext is not IDialogAware viewModel)
             {
                 throw new NullReferenceException("A dialog's ViewModel must implement the IDialogAware interface");
             }
@@ -249,35 +249,30 @@ namespace PrismExpansion.Services.Dialogs
         /// </summary>
         /// <param name="dialogWindow"></param>
         /// <param name="callback"></param>
-        void ConfigureDialogWindowEvents(IDialogWindow dialogWindow, Action<IDialogResult>? callback)
+        private void ConfigureDialogWindowEvents(IDialogWindow dialogWindow, Action<IDialogResult>? callback)
         {
-            Action<IDialogResult>? requestCloseHandler = null;
-            requestCloseHandler = (o) =>
+            #region ローカル関数
+            void requestCloseHandler(IDialogResult o)
             {
                 dialogWindow.Result = o;
                 dialogWindow.Close();
-            };
+            }
 
-            RoutedEventHandler? loadedHandler = null;
-            loadedHandler = (o, e) =>
+            void loadedHandler(object o, RoutedEventArgs e)
             {
                 dialogWindow.Loaded -= loadedHandler;
                 ((IDialogAware)dialogWindow.DataContext).RequestClose += requestCloseHandler;
-            };
-            dialogWindow.Loaded += loadedHandler;
+            }
 
-            CancelEventHandler? closingHandler = null;
-            closingHandler = (o, e) =>
+            void closingHandler(object? o, CancelEventArgs e)
             {
                 if (!((IDialogAware)dialogWindow.DataContext).CanCloseDialog())
                 {
                     e.Cancel = true;
                 }
-            };
-            dialogWindow.Closing += closingHandler;
+            }
 
-            EventHandler? closedHandler = null;
-            closedHandler = (o, e) =>
+            void closedHandler(object? o, EventArgs e)
             {
                 dialogWindow.Closed -= closedHandler;
                 dialogWindow.Closing -= closingHandler;
@@ -310,8 +305,11 @@ namespace PrismExpansion.Services.Dialogs
                 {
                     _dialogList.Remove(key);
                 }
-            };
+            }
+            #endregion ローカル関数
 
+            dialogWindow.Loaded += loadedHandler;
+            dialogWindow.Closing += closingHandler;
             dialogWindow.Closed += closedHandler;
         }
 
@@ -321,7 +319,7 @@ namespace PrismExpansion.Services.Dialogs
         /// <param name="window"></param>
         /// <param name="dialogContent"></param>
         /// <param name="viewModel"></param>
-        void ConfigureDialogWindowProperties(IDialogWindow window, FrameworkElement dialogContent, IDialogAware viewModel)
+        private void ConfigureDialogWindowProperties(IDialogWindow window, FrameworkElement dialogContent, IDialogAware viewModel)
         {
             bool unsetOwner = false;
 

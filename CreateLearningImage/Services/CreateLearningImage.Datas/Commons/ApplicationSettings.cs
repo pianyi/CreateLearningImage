@@ -28,14 +28,8 @@ namespace CreateLearningImage.Datas.Common
         [JsonProperty("MovieFilePath")]
         public string MovieFilePath
         {
-            get
-            {
-                return _movieFilePath;
-            }
-            set
-            {
-                SetProperty(ref _movieFilePath, value);
-            }
+            get => _movieFilePath;
+            set => SetProperty(ref _movieFilePath, value);
         }
 
         /// <summary>
@@ -48,14 +42,8 @@ namespace CreateLearningImage.Datas.Common
         [JsonProperty("LbpcascadeFilePath")]
         public string LbpcascadeFilePath
         {
-            get
-            {
-                return _lbpcascadeFilePath;
-            }
-            set
-            {
-                SetProperty(ref _lbpcascadeFilePath, value);
-            }
+            get => _lbpcascadeFilePath;
+            set => SetProperty(ref _lbpcascadeFilePath, value);
         }
 
         /// <summary>
@@ -68,14 +56,8 @@ namespace CreateLearningImage.Datas.Common
         [JsonProperty("OutputDirectoryPath")]
         public string OutputDirectoryPath
         {
-            get
-            {
-                return _outputDirectoryPath;
-            }
-            set
-            {
-                SetProperty(ref _outputDirectoryPath, value);
-            }
+            get => _outputDirectoryPath;
+            set => SetProperty(ref _outputDirectoryPath, value);
         }
 
         /// <summary>

@@ -404,7 +404,7 @@ namespace CreateLearningImage.Datas.Common
             if (attr != null)
             {
                 // フォルダの場合は分割する
-                List<string> checkList = new List<string>();
+                List<string> checkList = new();
                 if (attr.IsFilePath)
                 {
                     // ドライブレターは先に消しておく

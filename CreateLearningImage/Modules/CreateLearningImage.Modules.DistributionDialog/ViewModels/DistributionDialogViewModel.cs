@@ -41,12 +41,12 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
         /// <summary>
         /// イベント登録クラス
         /// </summary>
-        private IEventAggregator _eventAggregator;
+        private readonly IEventAggregator _eventAggregator;
 
         /// <summary>
         /// メイン画面操作サービス
         /// </summary>
-        private ViewMainControlService _mainControlService;
+        private readonly ViewMainControlService _mainControlService;
 
         /// <summary>
         /// 画面クローズアクション(フォームの閉じるボタン以外閉じる方法が無いので、利用しない)

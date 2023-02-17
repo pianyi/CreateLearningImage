@@ -25,7 +25,7 @@ namespace CreateLearningImage.Datas.Common
         /// <returns>ReactiveProperty用に変換されたインスタンス</returns>
         public virtual T GetReactiveData()
         {
-            MapperConfiguration config = new MapperConfiguration(cfg =>
+            MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<string, ReactiveProperty<string>>().ConvertUsing(new ReactivePropertyStringConverter());
                 cfg.CreateMap<short, ReactiveProperty<short>>().ConvertUsing(new ReactivePropertyShortConverter());

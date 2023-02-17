@@ -14,7 +14,7 @@ namespace CreateLearningImage.Core.Datas
         /// <summary>
         /// IDisposableなオブジェクトを一括でDisposeします。
         /// </summary>
-        protected CompositeDisposable Disposables = new CompositeDisposable();
+        protected CompositeDisposable Disposables = new();
 
         /// <summary>
         /// 重複する呼び出しを検出する

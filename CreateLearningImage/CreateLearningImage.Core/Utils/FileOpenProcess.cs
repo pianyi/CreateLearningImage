@@ -98,7 +98,7 @@ namespace CreateLearningImage.Core.Utils
                 {
                     // タイトルを取得
                     int length = NativeMethods.GetWindowTextLength(hWnd);
-                    string title = new string('\0', length + 1);
+                    string title = new('\0', length + 1);
                     _ = NativeMethods.GetWindowText(hWnd, title, title.Length);
 
                     if (title.Trim('\0') == OpenedTitle)

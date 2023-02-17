@@ -22,7 +22,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Modules
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Modules.DistributionDialog", "CreateLearningImage\Modules\CreateLearningImage.Modules.DistributionDialog\CreateLearningImage.Modules.DistributionDialog.csproj", "{62C6021A-E185-44E3-B310-AC7E41E2EC2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateLearningImage.Datas", "CreateLearningImage\Services\CreateLearningImage.Datas\CreateLearningImage.Datas.csproj", "{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateLearningImage.Datas", "CreateLearningImage\Services\CreateLearningImage.Datas\CreateLearningImage.Datas.csproj", "{D2364FE5-9CA9-4AED-A58C-2B8FCFFFD00A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{86170FB1-CD9D-401A-9F67-EDB94A896EBB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
