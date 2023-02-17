@@ -19,6 +19,20 @@ namespace CreateLearningImage.Datas.Common
         public string AapplicationVersion { get; set; } = "0.0.0.0";
 
         /// <summary>
+        /// キャプチャタイミング
+        /// </summary>
+        private int _captureTiming = 5000;
+        /// <summary>
+        /// キャプチャタイミング
+        /// </summary>
+        [JsonProperty("CaptureTiming")]
+        public int CaptureTiming
+        {
+            get => _captureTiming;
+            set => SetProperty(ref _captureTiming, value);
+        }
+
+        /// <summary>
         /// 動画ファイルパス
         /// </summary>
         private string _movieFilePath = string.Empty;

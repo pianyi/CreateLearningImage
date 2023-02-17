@@ -13,14 +13,27 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Text="Learning Data:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <RadioButton IsChecked="{Binding IsLearning.Value}"/>
+            <TextBlock Text="Test Data:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <RadioButton IsChecked="{Binding IsTest.Value}"></RadioButton>
 
-        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True">
+            <TextBlock Text="Capter timing(ms)" Margin="30,5,5,5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <metro:NumericUpDown Margin="5" Width="100"
+                                 Minimum="1"
+                                 Value="{Binding Timing.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        
+        <DockPanel Grid.Row="1" Grid.Column="0" LastChildFill="True">
             <TextBlock Text="Movie path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
                     Command="{Binding BrowseFileCommand}" 
@@ -29,7 +42,7 @@
             <TextBox Text="{Binding ImageFilePath.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
         </DockPanel>
 
-        <DockPanel Grid.Row="1" Grid.Column="0" LastChildFill="True">
+        <DockPanel Grid.Row="2" Grid.Column="0" LastChildFill="True">
             <TextBlock Text="Lbpcascade path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
                     Command="{Binding BrowseFileCommand}"
@@ -38,7 +51,7 @@
             <TextBox Text="{Binding Lbpcascade.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
         </DockPanel>
 
-        <DockPanel Grid.Row="2" Grid.Column="0" LastChildFill="True">
+        <DockPanel Grid.Row="3" Grid.Column="0" LastChildFill="True">
             <TextBlock Text="Output path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
                     Command="{Binding BrowseDirectoryCommand}"
@@ -47,9 +60,9 @@
             <TextBox Text="{Binding Output.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
         </DockPanel>
 
-        <Image Grid.Row="3" Grid.Column="0" Source="{Binding Images.Value}"/>
+        <Image Grid.Row="4" Grid.Column="0" Source="{Binding Images.Value}"/>
 
-        <DockPanel Grid.Row="4" Grid.Column="0">
+        <DockPanel Grid.Row="5" Grid.Column="0" Margin="5,0,5,0">
             <ToggleButton DockPanel.Dock="Left"
                           Width="48"
                           Height="48"

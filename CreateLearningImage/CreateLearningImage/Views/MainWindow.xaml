@@ -6,7 +6,7 @@
                    prism:ViewModelLocator.AutoWireViewModel="True"
                    xmlns:core="clr-namespace:CreateLearningImage.Core;assembly=CreateLearningImage.Core"
                    metro:DialogParticipation.Register="{Binding}"
-                   Title="{Binding Title.Value}" Height="350" Width="525" >
+                   Title="{Binding Title.Value}" Height="550" Width="525" >
     
     <Grid>
         <ContentControl prism:RegionManager.RegionName="{x:Static core:Constants.ContentRegion}" />

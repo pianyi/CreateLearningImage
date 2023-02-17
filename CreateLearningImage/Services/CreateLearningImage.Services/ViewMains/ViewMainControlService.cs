@@ -41,8 +41,27 @@ namespace CreateLearningImage.Services.ViewMains
         /// <summary>
         /// イベント登録クラス
         /// </summary>
-        [Unity.Dependency]
-        internal IEventAggregator EventAggregator;
+        private readonly IEventAggregator _eventAggregator;
+
+        /// <summary>
+        /// 設定情報
+        /// </summary>
+        private readonly ApplicationSettings _applicationSetting;
+
+        /// <summary>
+        /// 学習用データ作成
+        /// </summary>
+        public ReactivePropertySlim<bool> IsLearning { get; set; }
+
+        /// <summary>
+        /// テスト用データ作成
+        /// </summary>
+        public ReactivePropertySlim<bool> IsTest { get; set; }
+
+        /// <summary>
+        /// キャプチャタイミング
+        /// </summary>
+        public ReactivePropertySlim<int> Timing { get; set; }
 
         /// <summary>
         /// 動画ファイルのパス
@@ -108,11 +127,18 @@ namespace CreateLearningImage.Services.ViewMains
         /// コンストラクタ
         /// </summary>
         /// <param name="settings">アプリケーション設定</param>
-        public ViewMainControlService(ApplicationSettings settings)
+        public ViewMainControlService(IEventAggregator eventAggregator,
+                                      ApplicationSettings settings)
         {
-            ImageFilePath = settings.ToReactivePropertySlimAsSynchronized(x => x.MovieFilePath);
-            Lbpcascade = settings.ToReactivePropertySlimAsSynchronized(x => x.LbpcascadeFilePath);
-            Output = settings.ToReactivePropertySlimAsSynchronized(x => x.OutputDirectoryPath);
+            _eventAggregator = eventAggregator;
+            _applicationSetting = settings;
+
+            IsLearning = new ReactivePropertySlim<bool>(true);
+            IsTest = new ReactivePropertySlim<bool>(false);
+            Timing = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.CaptureTiming);
+            ImageFilePath = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.MovieFilePath);
+            Lbpcascade = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.LbpcascadeFilePath);
+            Output = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.OutputDirectoryPath);
             StartStopButtonName = new ReactivePropertySlim<string>(IconNamePlay);
             IsStart = new ReactivePropertySlim<bool>(false);
             Images = new ReactivePropertySlim<BitmapSource>();
@@ -150,8 +176,9 @@ namespace CreateLearningImage.Services.ViewMains
         {
             try
             {
-                if (!File.Exists(ImageFilePath.Value))
+                if (string.IsNullOrEmpty(ImageFilePath.Value))
                 {
+                    Stop();
                     return;
                 }
 
@@ -172,7 +199,7 @@ namespace CreateLearningImage.Services.ViewMains
                     _videoCapture.PosFrames = 0;
                     Faces.Clear();
 
-                    EventAggregator.GetEvent<InitializeEvent>().Publish();
+                    _eventAggregator.GetEvent<InitializeEvent>().Publish();
 
                     // FPS に合わせた画像更新を行う
                     _timer.Interval = new TimeSpan((long)(1000 / _videoCapture.Fps));
@@ -229,7 +256,7 @@ namespace CreateLearningImage.Services.ViewMains
                 using var mat = new Mat();
                 if (_videoCapture.Read(mat) && mat.IsContinuous())
                 {
-                    if (500 < _stopwatch.ElapsedMilliseconds)
+                    if (Timing.Value < _stopwatch.ElapsedMilliseconds)
                     {
                         Task.Run(() => AnalyseAsync(mat.Clone()));
                         _stopwatch.Restart();
@@ -286,11 +313,22 @@ namespace CreateLearningImage.Services.ViewMains
                     // 認識された顔を格納
                     var image = mat[rect].ToBitmapSource();
                     image.Freeze();
-                    Faces.Add(new ImageData()
+                    ImageData data = new()
                     {
                         Image = image,
                         Index = Faces.Count
-                    });
+                    };
+
+                    if (IsLearning.Value)
+                    {
+                        // 学習データはユーザ選択用に保持し保存しない
+                        Faces.Add(data);
+                    }
+                    else
+                    {
+                        // テストデータはそのまま保存
+                        SaveImage(data);
+                    }
                 }
             }
             catch (Exception ex)
@@ -304,35 +342,70 @@ namespace CreateLearningImage.Services.ViewMains
         }
 
         /// <summary>
+        /// 指定画像情報を削除します
+        /// </summary>
+        /// <param name="index"></param>
+        public void DeleteAt(int index)
+        {
+            // データは0始まり、index は1始まり
+            int value = index - 1;
+            if (0 <= value && value < Faces.Count)
+            {
+                Faces.Remove(Faces[value]);
+            }
+        }
+
+        /// <summary>
         /// 画像ファイルを保存します
         /// </summary>
         /// <param name="data">保存データクラス</param>
         /// <param name="fromFolderName">変更前のフォルダ名</param>
         public void SaveImage(ImageData data, string fromFolderName = "")
         {
-            // 保存先フォルダパスを作成する
-            string newPath = Path.Combine(Output.Value, data.FolderName);
-            newPath = Path.Combine(newPath, $"{_executeDateTime}_{data.Index}.png");
-
-            if (!string.IsNullOrEmpty(data.FolderName) && string.IsNullOrEmpty(fromFolderName))
+            if (IsTest.Value)
             {
-                // 保存先が指定されており、元フォルダ名が未指定の場合、新規ファイル作成で保存する
+                // テストデータの出力(フォルダ階層を下げる)
+                string newPath = GetOutputFolderPath();
+                // テストの場合はIndexが指定されていないのでフォルダ内のデータ数を設定する
+                data.Index = Directory.GetFiles(newPath, "*", SearchOption.TopDirectoryOnly).Length;
+                newPath = Path.Combine(newPath, GetImageFileName(data));
 
                 using var fileStream = new FileStream(newPath, FileMode.Create);
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(data.Image));
                 encoder.Save(fileStream);
             }
-            else if (!string.IsNullOrEmpty(data.FolderName) && !string.IsNullOrEmpty(fromFolderName) &&
-                     data.FolderName != fromFolderName)
+            else
             {
-                // 保存先が指定されており、元フォルダ名も指定されている場合、ファイルを移動する
-                string fromPath = Path.Combine(Output.Value, fromFolderName);
-                fromPath = Path.Combine(fromPath, $"{_executeDateTime}_{data.Index}.png");
+                // 学習用データの出力(出力先に分類フォルダをさらに追加)
+                string newPath = GetOutputFolderPath();
+                newPath = Path.Combine(newPath, data.FolderName);
+                newPath = Path.Combine(newPath, GetImageFileName(data));
 
-                if (File.Exists(fromPath))
+                if (!string.IsNullOrEmpty(data.FolderName) && string.IsNullOrEmpty(fromFolderName))
                 {
-                    File.Move(fromPath, newPath);
+                    // 保存先が指定されており、元フォルダ名が未指定の場合、新規ファイル作成で保存する
+
+                    _logger.Debug($"出力：{newPath}");
+
+                    using var fileStream = new FileStream(newPath, FileMode.Create);
+                    BitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(data.Image));
+                    encoder.Save(fileStream);
+                }
+                else if (!string.IsNullOrEmpty(data.FolderName) && !string.IsNullOrEmpty(fromFolderName) &&
+                         data.FolderName != fromFolderName)
+                {
+                    // 保存先が指定されており、元フォルダ名も指定されている場合、ファイルを移動する
+                    string fromPath = Path.Combine(GetOutputFolderPath(), fromFolderName);
+                    fromPath = Path.Combine(fromPath, GetImageFileName(data));
+
+                    _logger.Info($"移動：{fromPath} → {newPath}");
+
+                    if (File.Exists(fromPath))
+                    {
+                        File.Move(fromPath, newPath);
+                    }
                 }
             }
         }
@@ -352,6 +425,38 @@ namespace CreateLearningImage.Services.ViewMains
 
                 SaveImage(data);
             }
+        }
+
+        /// <summary>
+        /// データ出力先フォルダを取得します
+        /// </summary>
+        /// <returns>出力先フォルダパス</returns>
+        public string GetOutputFolderPath()
+        {
+            string result = Output.Value;
+
+            if (IsLearning.Value)
+            {
+                result = Path.Combine(result, Constants.DirectoryNameLearning);
+            }
+            else
+            {
+                result = Path.Combine(result, Constants.DirectoryNameTest);
+            }
+
+            Directory.CreateDirectory(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 保存ファイル名を作成します。
+        /// </summary>
+        /// <param name="data">保存データ</param>
+        /// <returns>ファイル名称</returns>
+        private string GetImageFileName(ImageData data)
+        {
+            return $"{_executeDateTime}_{data.Index}.png";
         }
     }
 }

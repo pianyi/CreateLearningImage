@@ -105,6 +105,11 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
         public ReactiveCommand NextCommand { get; set; }
 
         /// <summary>
+        /// Deleteキー動作
+        /// </summary>
+        public ReactiveCommand DeleteCommand { get; set; }
+
+        /// <summary>
         /// 上キー動作
         /// </summary>
         public ReactiveCommand UpCommand { get; set; }
@@ -157,6 +162,7 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
         /// コンストラクタ
         /// </summary>
         /// <param name="eventAggregator"></param>
+        /// <param name="mainControlService"></param>
         public DistributionDialogViewModel(IEventAggregator eventAggregator,
                                            ViewMainControlService mainControlService)
         {
@@ -174,6 +180,7 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
 
             PrevCommand = new ReactiveCommand().WithSubscribe(PrevClick).AddTo(Disposables);
             NextCommand = new ReactiveCommand().WithSubscribe(NextClick).AddTo(Disposables);
+            DeleteCommand = new ReactiveCommand().WithSubscribe(KeyDelete).AddTo(Disposables);
             UpCommand = new ReactiveCommand().WithSubscribe(KeyUp).AddTo(Disposables);
             DownCommand = new ReactiveCommand().WithSubscribe(KeyDown).AddTo(Disposables);
             LeftCommand = new ReactiveCommand().WithSubscribe(KeyLeft).AddTo(Disposables);
@@ -223,6 +230,14 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
         private void RemoveFaceData(ImageData imageData)
         {
             MaxPageNumber.Value = Faces.Count;
+
+            if (MaxPageNumber.Value < PageNumber.Value)
+            {
+                // 最大値を超えた場合は1にする
+                PageNumber.Value = 1;
+            }
+
+            SetNextSelectedIndex();
         }
 
         /// <summary>
@@ -263,6 +278,14 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
 
             // 次に表示する画像と対応するフォルダを選択状態にします。
             SetNextSelectedIndex();
+        }
+
+        /// <summary>
+        /// 削除キー動作
+        /// </summary>
+        private void KeyDelete()
+        {
+            _mainControlService.DeleteAt(PageNumber.Value);
         }
 
         /// <summary>
@@ -411,7 +434,8 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
             {
                 if (string.IsNullOrEmpty(data.FolderName))
                 {
-                    var confirm = DialogCoordinator.ShowModalMessageExternal(this, "確認", "未確認のデータが有ります。データを破棄されますがよろしいですか？", MessageDialogStyle.AffirmativeAndNegative);
+                    var confirm = DialogCoordinator.ShowModalMessageExternal(this, "確認", "未確認のデータが有ります。データを破棄されますがよろしいですか？",
+                                                                             MessageDialogStyle.AffirmativeAndNegative);
                     if (confirm != MessageDialogResult.Affirmative)
                     {
                         result = false;

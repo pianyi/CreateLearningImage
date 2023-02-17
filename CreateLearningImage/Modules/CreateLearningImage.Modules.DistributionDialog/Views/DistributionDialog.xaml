@@ -9,7 +9,7 @@
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:prism="http://prismlibrary.com/"
              metro:DialogParticipation.Register="{Binding}"
-             prism:ViewModelLocator.AutoWireViewModel="True" >
+             prism:ViewModelLocator.AutoWireViewModel="True">
 
     <prism:Dialog.WindowStyle>
         <Style TargetType="{x:Type Window}">
@@ -24,10 +24,25 @@
     </prism:Dialog.WindowStyle>
 
     <UserControl.InputBindings>
+        <!-- その他操作 -->
+        <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
+        <KeyBinding Key="OemComma" Command="{Binding DeleteCommand}" />
+        <KeyBinding Key="Decimal" Command="{Binding DeleteCommand}" />
+
+        <KeyBinding Key="Multiply" Command="{Binding AppendDirectoryCommand}"/>
+
+        <!-- 画像移動 -->
+        <KeyBinding Key="Left" Command="{Binding LeftCommand}" />
+        <KeyBinding Key="OemMinus" Command="{Binding LeftCommand}" />
+        <KeyBinding Key="Subtract" Command="{Binding LeftCommand}" />
+
+        <KeyBinding Key="Right" Command="{Binding RightCommand}" />
+        <KeyBinding Key="OemPlus" Command="{Binding RightCommand}" />
+        <KeyBinding Key="Add" Command="{Binding RightCommand}" />
+
+        <!-- コンボボックス変更 -->
         <KeyBinding Key="Up" Command="{Binding UpCommand}" />
         <KeyBinding Key="Down" Command="{Binding DownCommand}" />
-        <KeyBinding Key="Left" Command="{Binding LeftCommand}" />
-        <KeyBinding Key="Right" Command="{Binding RightCommand}" />
         <KeyBinding Key="NumPad0" Command="{Binding NumberCommand}" CommandParameter="0"/>
         <KeyBinding Key="NumPad1" Command="{Binding NumberCommand}" CommandParameter="1"/>
         <KeyBinding Key="NumPad2" Command="{Binding NumberCommand}" CommandParameter="2"/>
@@ -39,8 +54,8 @@
         <KeyBinding Key="NumPad8" Command="{Binding NumberCommand}" CommandParameter="8"/>
         <KeyBinding Key="NumPad9" Command="{Binding NumberCommand}" CommandParameter="9"/>
     </UserControl.InputBindings>
-    
-    <Grid Margin="5">
+
+    <Grid Margin="5" FocusManager.FocusedElement="{Binding ElementName=Next}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
@@ -59,9 +74,9 @@
         <Image Grid.Row="1" Grid.Column="0" Source="{Binding Images.Value}"/>
 
         <DockPanel Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
-            <Button Width="80" Content="Prev" Margin="5" DockPanel.Dock="Left"
+            <Button x:Name="Prev" Width="80" Content="Prev" Margin="5" DockPanel.Dock="Left"
                     Command="{Binding PrevCommand}"/>
-            <Button Width="80" Content="Next" Margin="5" DockPanel.Dock="Left"
+            <Button x:Name="Next" Width="80" Content="Next" Margin="5" DockPanel.Dock="Left"
                     Command="{Binding NextCommand}"/>
             <ComboBox Width="150" Margin="5" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" DockPanel.Dock="Left"
                       DisplayMemberPath="DisplayMember.Value"

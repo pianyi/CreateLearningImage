@@ -13,6 +13,15 @@ namespace CreateLearningImage.Core
         public const string ContentRegion = "ContentRegion";
 
         /// <summary>
+        /// 学習データ用フォルダ
+        /// </summary>
+        public const string DirectoryNameLearning = "Learning";
+        /// <summary>
+        /// テストデータ用フォルダ
+        /// </summary>
+        public const string DirectoryNameTest = "Test";
+
+        /// <summary>
         /// その他の画像を入れるフォルダパス
         /// </summary>
         public const string DirectoryNameOthers = "Others";
