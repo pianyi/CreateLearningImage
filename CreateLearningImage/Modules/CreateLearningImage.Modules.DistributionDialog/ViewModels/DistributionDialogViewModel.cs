@@ -217,7 +217,7 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
             MaxPageNumber.Value = Faces.Count;
             if (Images.Value == null)
             {
-                // 1個目を表示する
+                // 1個目を表示する(メソッド内で+1するので0を指定)
                 PageNumber.Value = 0;
                 NextClick();
             }
@@ -363,17 +363,26 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
         /// </summary>
         private void SetNextSelectedIndex()
         {
-            ImageData nextData = Faces[PageNumber.Value - 1];
-            if (string.IsNullOrEmpty(nextData.FolderName))
+            int index = PageNumber.Value - 1;
+
+            if (index < Faces.Count)
             {
-                SelectedOutputInfo.Value = Constants.DirectoryNameOthers;
+                ImageData nextData = Faces[index];
+                if (string.IsNullOrEmpty(nextData.FolderName))
+                {
+                    SelectedOutputInfo.Value = Constants.DirectoryNameOthers;
+                }
+                else
+                {
+                    SelectedOutputInfo.Value = nextData.FolderName;
+                }
+
+                Images.Value = nextData.Image;
             }
             else
             {
-                SelectedOutputInfo.Value = nextData.FolderName;
+                Images.Value = null;
             }
-
-            Images.Value = nextData.Image;
         }
 
         /// <summary>

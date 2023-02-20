@@ -12,9 +12,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Web;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using VideoLibrary;
 using Rect = OpenCvSharp.Rect;
 
 namespace CreateLearningImage.Services.ViewMains
@@ -124,6 +125,11 @@ namespace CreateLearningImage.Services.ViewMains
         private string _executeDateTime = string.Empty;
 
         /// <summary>
+        /// 作成した画像のIndex 
+        /// </summary>
+        private long _imageIndex = 0;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="settings">アプリケーション設定</param>
@@ -148,7 +154,7 @@ namespace CreateLearningImage.Services.ViewMains
             Lbpcascade.Subscribe(CreateCascadeClassifier);
 
             // 優先順位を指定してタイマのインスタンスを生成
-            _timer = new DispatcherTimer(DispatcherPriority.Background);
+            _timer = new DispatcherTimer(DispatcherPriority.Normal);
             // 時間が来たら描画を行う
             _timer.Tick += (e, s) => { ReadFrame(); };
         }
@@ -170,54 +176,79 @@ namespace CreateLearningImage.Services.ViewMains
         }
 
         /// <summary>
+        /// 動画の再生を最初に戻します。
+        /// </summary>
+        public void StepBack()
+        {
+            if (_videoCapture != null)
+            {
+                _videoCapture.PosFrames = 0;
+                ReadFrame();
+            }
+        }
+
+        /// <summary>
         /// 動画再生を開始します
         /// </summary>
-        public void Start()
+        public async Task StartAsync()
         {
-            try
-            {
-                if (string.IsNullOrEmpty(ImageFilePath.Value))
-                {
-                    Stop();
-                    return;
-                }
-
-                if (_videoCapture?.FrameCount == _videoCapture?.PosFrames)
-                {
-                    // 現在のフレームと最大フレームば同じ場合は再生完了とし、最初から再生する
-
-                    // 前の動画を破棄する
-                    _videoCapture?.Dispose();
-
-                    _videoCapture = new VideoCapture(ImageFilePath.Value);
-                    if (!_videoCapture.IsOpened())
-                    {
-                        throw new ArgumentException("指定ファイルの読み込みに失敗しました。");
-                    }
-
-                    // 一番最初から再生する
-                    _videoCapture.PosFrames = 0;
-                    Faces.Clear();
-
-                    _eventAggregator.GetEvent<InitializeEvent>().Publish();
-
-                    // FPS に合わせた画像更新を行う
-                    _timer.Interval = new TimeSpan((long)(1000 / _videoCapture.Fps));
-
-                    _executeDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                }
-
-                _stopwatch.Restart();
-                StartStopButtonName.Value = IconNamePause;
-                IsStart.Value = true;
-
-                _timer.Start();
-            }
-            catch
+            if (string.IsNullOrEmpty(ImageFilePath.Value))
             {
                 Stop();
-                throw;
+                return;
             }
+
+            string youtubeUri = GetYoutubeURL(ImageFilePath.Value);
+            if (youtubeUri == null && File.Exists(ImageFilePath.Value))
+            {
+                // 再生データが無いので処理しない
+                Stop();
+                return;
+            }
+
+            if (_videoCapture?.FrameCount == _videoCapture?.PosFrames)
+            {
+                // 現在のフレームと最大フレームば同じ場合は再生完了とし、最初から再生する
+
+                // 前の動画を破棄する
+                _videoCapture?.Dispose();
+
+                if (string.IsNullOrEmpty(youtubeUri))
+                {
+                    // ファイルを再生する
+                    _videoCapture = new VideoCapture(ImageFilePath.Value);
+                }
+                else
+                {
+                    // youtube をcaptureする
+                    YouTubeVideo video = await YouTube.Default.GetVideoAsync(youtubeUri);
+                    _videoCapture = new VideoCapture(video.Uri);
+                }
+
+                if (!_videoCapture.IsOpened())
+                {
+                    throw new ArgumentException("指定ファイルの読み込みに失敗しました。");
+                }
+
+                // 一番最初から再生する
+                _videoCapture.Set(VideoCaptureProperties.BufferSize, _videoCapture.FrameCount);
+                StepBack();
+                Faces.Clear();
+                _imageIndex = 0;
+
+                _eventAggregator.GetEvent<InitializeEvent>().Publish();
+
+                // FPS に合わせた画像更新を行う
+                _timer.Interval = TimeSpan.FromMilliseconds((int)(1000 / _videoCapture.Fps));
+
+                _executeDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            }
+
+            _stopwatch.Restart();
+            StartStopButtonName.Value = IconNamePause;
+            IsStart.Value = true;
+
+            _timer.Start();
         }
 
         /// <summary>
@@ -247,49 +278,34 @@ namespace CreateLearningImage.Services.ViewMains
         /// </summary>
         private void ReadFrame()
         {
-            bool isEnd = false;
-
             try
             {
-                _timer.Stop();
-
                 using var mat = new Mat();
-                if (_videoCapture.Read(mat) && mat.IsContinuous())
+                if (_videoCapture.Read(mat))
                 {
-                    if (Timing.Value < _stopwatch.ElapsedMilliseconds)
+                    if (mat.IsContinuous())
                     {
-                        Task.Run(() => AnalyseAsync(mat.Clone()));
-                        _stopwatch.Restart();
-                    }
+                        if (Timing.Value < _stopwatch.ElapsedMilliseconds && !mat.IsDisposed)
+                        {
+                            // 指定秒数経過した画像を解析に回す
+                            Task.Run(() => AnalyseAsync(mat.Clone()));
+                            _stopwatch.Restart();
+                        }
 
-                    var image = mat.ToBitmapSource();
-                    if (image.CanFreeze)
-                    {
-                        image.Freeze();
+                        // 画像を表示する
+                        Images.Value = mat.ToWriteableBitmap();
                     }
-
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
-                    {
-                        Images.Value = image;
-                    }));
                 }
-                else
+
+                if (_videoCapture.FrameCount == _videoCapture.PosFrames)
                 {
                     // 動画再生終わり
                     Stop();
-                    isEnd = true;
                 }
             }
             catch
             {
-                _logger.Warn("コマ落ちしてます");
-            }
-            finally
-            {
-                if (!isEnd)
-                {
-                    _timer.Start();
-                }
+                _logger.Warn("ファイルの読み込みで想定外エラー");
             }
         }
 
@@ -316,13 +332,14 @@ namespace CreateLearningImage.Services.ViewMains
                     ImageData data = new()
                     {
                         Image = image,
-                        Index = Faces.Count
+                        Index = _imageIndex
                     };
+                    _imageIndex++;
 
                     if (IsLearning.Value)
                     {
                         // 学習データはユーザ選択用に保持し保存しない
-                        Faces.Add(data);
+                        Faces.AddOnScheduler(data);
                     }
                     else
                     {
@@ -342,6 +359,45 @@ namespace CreateLearningImage.Services.ViewMains
         }
 
         /// <summary>
+        /// YoutubeのURLが正しいかを確認します。
+        /// </summary>
+        /// <param name="url">チェックURL</param>
+        /// <returns>正常なURL</returns>
+        private string GetYoutubeURL(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+
+            string videoId;
+            string link;
+
+            var uri = new Uri(url);
+            switch (uri.Authority)
+            {
+                case "www.youtube.com":
+                    var nv = HttpUtility.ParseQueryString(uri.Query);
+                    videoId = nv["v"];
+                    if (videoId == null)
+                    {
+                        return null;
+                    }
+                    link = $"{uri.Scheme}://{uri.Host}{uri.AbsolutePath}?v={videoId}";
+                    break;
+
+                case "youtu.be":
+                    link = uri.AbsoluteUri;
+                    break;
+
+                default:
+                    return null;
+            }
+
+            return link;
+        }
+
+        /// <summary>
         /// 指定画像情報を削除します
         /// </summary>
         /// <param name="index"></param>
@@ -351,6 +407,18 @@ namespace CreateLearningImage.Services.ViewMains
             int value = index - 1;
             if (0 <= value && value < Faces.Count)
             {
+                var data = Faces[value];
+
+                if (!string.IsNullOrEmpty(data.FolderName))
+                {
+                    string filePath = Path.Combine(GetOutputFolderPath(), data.FolderName);
+                    filePath = Path.Combine(filePath, GetImageFileName(data));
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+                }
+
                 Faces.Remove(Faces[value]);
             }
         }
@@ -367,7 +435,6 @@ namespace CreateLearningImage.Services.ViewMains
                 // テストデータの出力(フォルダ階層を下げる)
                 string newPath = GetOutputFolderPath();
                 // テストの場合はIndexが指定されていないのでフォルダ内のデータ数を設定する
-                data.Index = Directory.GetFiles(newPath, "*", SearchOption.TopDirectoryOnly).Length;
                 newPath = Path.Combine(newPath, GetImageFileName(data));
 
                 using var fileStream = new FileStream(newPath, FileMode.Create);

@@ -25,9 +25,9 @@
     <ProjectReference Include="..\Modules\CreateLearningImage.Modules.Main\CreateLearningImage.Modules.Main.csproj" />
   </ItemGroup>
   
-  <ItemGroup>
-    <None Update="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+      <None Update="NLog.config">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

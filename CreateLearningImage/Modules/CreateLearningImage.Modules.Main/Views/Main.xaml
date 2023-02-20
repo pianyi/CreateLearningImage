@@ -63,6 +63,16 @@
         <Image Grid.Row="4" Grid.Column="0" Source="{Binding Images.Value}"/>
 
         <DockPanel Grid.Row="5" Grid.Column="0" Margin="5,0,5,0">
+            <Button DockPanel.Dock="Left"
+                          Width="48"
+                          Height="48"
+                          Margin="4"
+                          Command="{Binding StepBackwradCommand}"
+                          Style="{DynamicResource MahApps.Styles.Button.Circle}">
+                <iconPacks:PackIconFontisto Width="24"
+                                            Height="24"
+                                            Kind="StepBackwrad"/>
+            </Button>
             <ToggleButton DockPanel.Dock="Left"
                           Width="48"
                           Height="48"

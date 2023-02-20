@@ -12,6 +12,7 @@
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
     <PackageReference Include="ReactiveProperty" Version="8.2.0" />
     <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
+    <PackageReference Include="VideoLibrary" Version="3.2.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CreateLearningImage.Core\CreateLearningImage.Core.csproj" />

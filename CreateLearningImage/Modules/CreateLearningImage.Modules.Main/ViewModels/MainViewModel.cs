@@ -10,6 +10,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Unity;
@@ -98,9 +99,14 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         public ReactiveCommand BrowseDirectoryCommand { get; set; }
 
         /// <summary>
+        /// 最初に戻るボタン
+        /// </summary>
+        public ReactiveCommand StepBackwradCommand { get; set; }
+
+        /// <summary>
         /// 再生・一時停止ボタン
         /// </summary>
-        public ReactiveCommand StartStopCommand { get; set; }
+        public AsyncReactiveCommand StartStopCommand { get; set; }
 
         /// <summary>
         /// 振り分け用ダイアログ表示
@@ -152,7 +158,8 @@ namespace CreateLearningImage.Modules.Main.ViewModels
 
             BrowseFileCommand = new ReactiveCommand<string>().WithSubscribe(BrowseFile).AddTo(Disposables);
             BrowseDirectoryCommand = new ReactiveCommand().WithSubscribe(BrowseDirectory).AddTo(Disposables);
-            StartStopCommand = new ReactiveCommand().WithSubscribe(DoStartStop).AddTo(Disposables);
+            StepBackwradCommand = new ReactiveCommand().WithSubscribe(StepBackwrad).AddTo(Disposables);
+            StartStopCommand = new AsyncReactiveCommand().WithSubscribe(DoStartStopAsync).AddTo(Disposables);
             DistributionCommand = new ReactiveCommand().WithSubscribe(ShowDistributionDialog).AddTo(Disposables);
         }
 
@@ -202,9 +209,24 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         }
 
         /// <summary>
+        /// 再生位置を最初に戻します。
+        /// </summary>
+        private void StepBackwrad()
+        {
+            try
+            {
+                MainControlService.StepBack();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("処理に失敗しました。", ex);
+            }
+        }
+
+        /// <summary>
         /// 動画の再生・一時停止を制御します
         /// </summary>
-        private void DoStartStop()
+        private async Task DoStartStopAsync()
         {
             try
             {
@@ -214,7 +236,7 @@ namespace CreateLearningImage.Modules.Main.ViewModels
                     {
                         DialogCoordinator.ShowModalMessageExternal(this,
                                                                    "エラー",
-                                                                   "動画ファイルが指定されていません。");
+                                                                   "動画ファイルまたはYoutubeのURLが指定されていません。");
                         IsStart.Value = !IsStart.Value;
                         return;
                     }
@@ -242,7 +264,7 @@ namespace CreateLearningImage.Modules.Main.ViewModels
                     }
 
                     // 再生開始
-                    MainControlService.Start();
+                    await MainControlService.StartAsync();
                 }
                 else
                 {
