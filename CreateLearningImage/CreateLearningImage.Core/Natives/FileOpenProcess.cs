@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace CreateLearningImage.Core.Utils
+namespace CreateLearningImage.Core.Natives
 {
     /// <summary>
     /// ファイル、フォルダ選択処理用クラス

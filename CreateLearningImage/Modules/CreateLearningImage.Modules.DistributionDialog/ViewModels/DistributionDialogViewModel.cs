@@ -159,6 +159,11 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
         private string _outputBasePath = string.Empty;
 
         /// <summary>
+        /// 確認用かどうか
+        /// </summary>
+        private bool _isCheck = false;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="eventAggregator"></param>
@@ -501,6 +506,10 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
                         Directory.CreateDirectory(othersPath);
                     }
                 }
+                if (parameters.TryGetValue(DialogParams.IsCheck, out bool isCheck))
+                {
+                    _isCheck = isCheck;
+                }
             }
 
             if (Directory.Exists(_outputBasePath))
@@ -518,6 +527,11 @@ namespace CreateLearningImage.Modules.DistributionDialog.ViewModels
                         OutputInfoList.AddOnScheduler(new ComboBoxItem(name, name));
                     }
                 }
+            }
+
+            if (_isCheck)
+            {
+                _mainControlService.ReadExistingData(_outputBasePath);
             }
         }
 

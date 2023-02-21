@@ -18,8 +18,13 @@ namespace CreateLearningImage.Services.Datas
         public string FolderName { get; set; }
 
         /// <summary>
-        /// データIndexj
+        /// 保存ファイル名称
         /// </summary>
-        public long Index { get; set; }
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// 読み込みデータかどうか(true:読み込みデータ、false:画像解析データ)
+        /// </summary>
+        public bool IsReadData { get; set; } = false;
     }
 }

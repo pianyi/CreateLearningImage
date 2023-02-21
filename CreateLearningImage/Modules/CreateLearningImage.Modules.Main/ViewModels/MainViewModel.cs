@@ -1,5 +1,5 @@
 ﻿using CreateLearningImage.Core.Mvvm;
-using CreateLearningImage.Core.Utils;
+using CreateLearningImage.Core.Natives;
 using CreateLearningImage.Services.ViewMains;
 using MahApps.Metro.Controls.Dialogs;
 using NLog;
@@ -111,7 +111,7 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         /// <summary>
         /// 振り分け用ダイアログ表示
         /// </summary>
-        public ReactiveCommand DistributionCommand { get; set; }
+        public ReactiveCommand<bool> DistributionCommand { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -160,7 +160,7 @@ namespace CreateLearningImage.Modules.Main.ViewModels
             BrowseDirectoryCommand = new ReactiveCommand().WithSubscribe(BrowseDirectory).AddTo(Disposables);
             StepBackwradCommand = new ReactiveCommand().WithSubscribe(StepBackwrad).AddTo(Disposables);
             StartStopCommand = new AsyncReactiveCommand().WithSubscribe(DoStartStopAsync).AddTo(Disposables);
-            DistributionCommand = new ReactiveCommand().WithSubscribe(ShowDistributionDialog).AddTo(Disposables);
+            DistributionCommand = new ReactiveCommand<bool>().WithSubscribe(ShowDistributionDialog).AddTo(Disposables);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace CreateLearningImage.Modules.Main.ViewModels
                     if (IsLearning.Value)
                     {
                         // 振り分けダイアログの表示(テスト用は全データ保存なので不要)
-                        ShowDistributionDialog();
+                        ShowDistributionDialog(false);
                     }
 
                     // 再生開始
@@ -285,18 +285,22 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         /// <summary>
         /// 振り分け画面を表示します
         /// </summary>
-        private void ShowDistributionDialog()
+        private void ShowDistributionDialog(bool isCheck)
         {
-            // 画像振り分け画面を表示する
-            DialogParameters param = new()
+            if (!string.IsNullOrEmpty(Output.Value))
             {
-                { DialogParams.Title, "Distribution" },
-                { DialogParams.Top, Application.Current.MainWindow.Top },
-                { DialogParams.Left, Application.Current.MainWindow.Left + Application.Current.MainWindow.Width },
-                { DialogParams.FolderPath, MainControlService.GetOutputFolderPath() }
-            };
+                // 画像振り分け画面を表示する
+                DialogParameters param = new()
+                {
+                    { DialogParams.Title, "Distribution" },
+                    { DialogParams.Top, Application.Current.MainWindow.Top },
+                    { DialogParams.Left, Application.Current.MainWindow.Left + Application.Current.MainWindow.Width },
+                    { DialogParams.FolderPath, MainControlService.GetOutputFolderPath() },
+                    { DialogParams.IsCheck, isCheck },
+                };
 
-            DialogService.Show(nameof(DistributionDialog), param, null, nameof(DistributionDialog));
+                DialogService.Show(nameof(DistributionDialog), param, null, nameof(DistributionDialog));
+            }
         }
     }
 }

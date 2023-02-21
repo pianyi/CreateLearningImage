@@ -51,6 +51,11 @@
         public const string FileNameList = "FileNameList";
 
         /// <summary>
+        /// チェックするかどうかのフラグ
+        /// </summary>
+        public const string IsCheck = "IsCheck";
+
+        /// <summary>
         /// はいボタン表示
         /// </summary>
         public const string IsShowYes = "IsShowYes";

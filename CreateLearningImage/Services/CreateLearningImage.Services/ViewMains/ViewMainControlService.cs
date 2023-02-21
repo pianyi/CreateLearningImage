@@ -1,5 +1,6 @@
 ﻿using CreateLearningImage.Core;
 using CreateLearningImage.Core.Events;
+using CreateLearningImage.Core.Natives;
 using CreateLearningImage.Datas.Common;
 using CreateLearningImage.Services.Datas;
 using NLog;
@@ -332,7 +333,7 @@ namespace CreateLearningImage.Services.ViewMains
                     ImageData data = new()
                     {
                         Image = image,
-                        Index = _imageIndex
+                        FileName = $"{_executeDateTime}_{_imageIndex}.png"
                     };
                     _imageIndex++;
 
@@ -412,10 +413,22 @@ namespace CreateLearningImage.Services.ViewMains
                 if (!string.IsNullOrEmpty(data.FolderName))
                 {
                     string filePath = Path.Combine(GetOutputFolderPath(), data.FolderName);
-                    filePath = Path.Combine(filePath, GetImageFileName(data));
+                    filePath = Path.Combine(filePath, data.FileName);
                     if (File.Exists(filePath))
                     {
-                        File.Delete(filePath);
+                        //File.Delete(filePath);
+
+                        FileDeleteProcess.SHFILEOPSTRUCT sf = new()
+                        {
+                            wFunc = FileDeleteProcess.FileFuncFlags.FO_DELETE, //削除を指示します。
+                            fFlags = FileDeleteProcess.FILEOP_FLAGS.FOF_ALLOWUNDO | FileDeleteProcess.FILEOP_FLAGS.FOF_NO_UI, // 元に戻すを有効。かつUI表示無し
+                            pFrom = filePath + "\0"
+                        };
+
+                        if (FileDeleteProcess.StartFileOperation(ref sf) != 0)
+                        {
+                            _logger.Warn("ファイルの削除に失敗しました。");
+                        }
                     }
                 }
 
@@ -435,7 +448,7 @@ namespace CreateLearningImage.Services.ViewMains
                 // テストデータの出力(フォルダ階層を下げる)
                 string newPath = GetOutputFolderPath();
                 // テストの場合はIndexが指定されていないのでフォルダ内のデータ数を設定する
-                newPath = Path.Combine(newPath, GetImageFileName(data));
+                newPath = Path.Combine(newPath, data.FileName);
 
                 using var fileStream = new FileStream(newPath, FileMode.Create);
                 BitmapEncoder encoder = new PngBitmapEncoder();
@@ -447,7 +460,7 @@ namespace CreateLearningImage.Services.ViewMains
                 // 学習用データの出力(出力先に分類フォルダをさらに追加)
                 string newPath = GetOutputFolderPath();
                 newPath = Path.Combine(newPath, data.FolderName);
-                newPath = Path.Combine(newPath, GetImageFileName(data));
+                newPath = Path.Combine(newPath, data.FileName);
 
                 if (!string.IsNullOrEmpty(data.FolderName) && string.IsNullOrEmpty(fromFolderName))
                 {
@@ -465,7 +478,7 @@ namespace CreateLearningImage.Services.ViewMains
                 {
                     // 保存先が指定されており、元フォルダ名も指定されている場合、ファイルを移動する
                     string fromPath = Path.Combine(GetOutputFolderPath(), fromFolderName);
-                    fromPath = Path.Combine(fromPath, GetImageFileName(data));
+                    fromPath = Path.Combine(fromPath, data.FileName);
 
                     _logger.Info($"移動：{fromPath} → {newPath}");
 
@@ -517,13 +530,30 @@ namespace CreateLearningImage.Services.ViewMains
         }
 
         /// <summary>
-        /// 保存ファイル名を作成します。
+        /// 現在出力されている画像を読み込みます
         /// </summary>
-        /// <param name="data">保存データ</param>
-        /// <returns>ファイル名称</returns>
-        private string GetImageFileName(ImageData data)
+        /// <param name="findFolderPath">読込先ファイルパス</param>
+        public void ReadExistingData(string findFolderPath)
         {
-            return $"{_executeDateTime}_{data.Index}.png";
+            if (Directory.Exists(findFolderPath))
+            {
+                Faces.Clear();
+
+                foreach (string filePath in Directory.EnumerateFiles(findFolderPath, "*", SearchOption.AllDirectories))
+                {
+                    _logger.Debug($"読み込み：{filePath}");
+                    var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Delete | FileShare.ReadWrite);
+                    var decoder = new PngBitmapDecoder(stream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnLoad);
+
+                    Faces.AddOnScheduler(new ImageData()
+                    {
+                        IsReadData = true,
+                        Image = decoder.Frames[0],
+                        FolderName = Path.GetFileName(Path.GetDirectoryName(filePath)),
+                        FileName = Path.GetFileName(filePath)
+                    });
+                }
+            }
         }
     }
 }
