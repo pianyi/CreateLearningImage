@@ -6,8 +6,8 @@
   <ItemGroup>
     <PackageReference Include="Prism.Unity" Version="8.1.97" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
-    <PackageReference Include="ReactiveProperty" Version="8.2.0" />
-    <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
+    <PackageReference Include="ReactiveProperty" Version="9.0.0" />
+    <PackageReference Include="ReactiveProperty.WPF" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CreateLearningImage.Core\CreateLearningImage.Core.csproj" />

@@ -4,14 +4,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.6.0.20220608" />
-    <PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.6.0.20220608" />
-    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.6.0.20220608" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.6.0.20220608" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.7.0.20230115" />
+    <PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.7.0.20230115" />
+    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.7.0.20230115" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.7.0.20230115" />
     <PackageReference Include="Prism.Unity" Version="8.1.97" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
-    <PackageReference Include="ReactiveProperty" Version="8.2.0" />
-    <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
+    <PackageReference Include="ReactiveProperty" Version="9.0.0" />
+    <PackageReference Include="ReactiveProperty.WPF" Version="9.0.0" />
     <PackageReference Include="VideoLibrary" Version="3.2.3" />
   </ItemGroup>
   <ItemGroup>
