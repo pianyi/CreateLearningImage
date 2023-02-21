@@ -75,6 +75,34 @@ namespace CreateLearningImage.Datas.Common
         }
 
         /// <summary>
+        /// 画像保存時の幅
+        /// </summary>
+        private int _resizeWidth = 100;
+        /// <summary>
+        /// 画像保存時の幅
+        /// </summary>
+        [JsonProperty("ResizeWidth")]
+        public int ResizeWidth
+        {
+            get => _resizeWidth;
+            set => SetProperty(ref _resizeWidth, value);
+        }
+
+        /// <summary>
+        /// 画像保存時の高さ
+        /// </summary>
+        private int _resizeHeight = 100;
+        /// <summary>
+        /// 画像保存時の高さ
+        /// </summary>
+        [JsonProperty("ResizeHeight")]
+        public int ResizeHeight
+        {
+            get => _resizeHeight;
+            set => SetProperty(ref _resizeHeight, value);
+        }
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public ApplicationSettings()

@@ -10,8 +10,10 @@ using Prism.Events;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Media.Imaging;
@@ -81,6 +83,16 @@ namespace CreateLearningImage.Services.ViewMains
         public ReactivePropertySlim<string> Output { get; set; }
 
         /// <summary>
+        /// 保存時の画像サイズ(幅)
+        /// </summary>
+        public ReactivePropertySlim<int> ResizeWidth { get; set; }
+
+        /// <summary>
+        /// 保存時の画像サイズ(高さ)
+        /// </summary>
+        public ReactivePropertySlim<int> ResizeHeight { get; set; }
+
+        /// <summary>
         /// 再生・一時停止ボタンの表示名称
         /// </summary>
         public ReactivePropertySlim<string> StartStopButtonName { get; set; }
@@ -99,6 +111,11 @@ namespace CreateLearningImage.Services.ViewMains
         /// 画像解析結果情報
         /// </summary>
         public ReactiveCollection<ImageData> Faces { get; set; }
+
+        /// <summary>
+        /// 画像解析処理ロック
+        /// </summary>
+        private object _locker = new();
 
         /// <summary>
         /// OpenCVのビデオキャプチャクラス
@@ -146,6 +163,8 @@ namespace CreateLearningImage.Services.ViewMains
             ImageFilePath = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.MovieFilePath);
             Lbpcascade = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.LbpcascadeFilePath);
             Output = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.OutputDirectoryPath);
+            ResizeWidth = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.ResizeWidth);
+            ResizeHeight = _applicationSetting.ToReactivePropertySlimAsSynchronized(x => x.ResizeHeight);
             StartStopButtonName = new ReactivePropertySlim<string>(IconNamePlay);
             IsStart = new ReactivePropertySlim<bool>(false);
             Images = new ReactivePropertySlim<BitmapSource>();
@@ -323,19 +342,30 @@ namespace CreateLearningImage.Services.ViewMains
                     return;
                 }
 
-                var gray = mat.CvtColor(ColorConversionCodes.BGR2GRAY);
-                var rects = _cascadeClassifier.DetectMultiScale(gray);
+                using Mat gray = mat.CvtColor(ColorConversionCodes.BGR2GRAY);
+                List<Rect> rects = _cascadeClassifier.DetectMultiScale(gray,
+                                                                       minSize: new Size(30, 30))
+                                                     .ToList();
                 foreach (Rect rect in rects)
                 {
                     // 認識された顔を格納
-                    var image = mat[rect].ToBitmapSource();
+                    using Mat originalSize = mat[rect];
+                    using Mat resize = originalSize.Resize(new Size(ResizeWidth.Value, ResizeHeight.Value),
+                                                           interpolation: InterpolationFlags.Lanczos4);
+                    BitmapSource image = resize.ToWriteableBitmap();
                     image.Freeze();
-                    ImageData data = new()
+
+                    ImageData data;
+                    lock (_locker)
                     {
-                        Image = image,
-                        FileName = $"{_executeDateTime}_{_imageIndex}.png"
-                    };
-                    _imageIndex++;
+                        // index がズレると困るのでここだけロックしておく
+                        data = new()
+                        {
+                            Image = image,
+                            FileName = $"{_executeDateTime}_{_imageIndex}.png"
+                        };
+                        _imageIndex++;
+                    }
 
                     if (IsLearning.Value)
                     {
@@ -420,7 +450,7 @@ namespace CreateLearningImage.Services.ViewMains
 
                         FileDeleteProcess.SHFILEOPSTRUCT sf = new()
                         {
-                            wFunc = FileDeleteProcess.FileFuncFlags.FO_DELETE, //削除を指示します。
+                            wFunc = FileDeleteProcess.FileFuncFlags.FO_DELETE, // 削除を指示します。
                             fFlags = FileDeleteProcess.FILEOP_FLAGS.FOF_ALLOWUNDO | FileDeleteProcess.FILEOP_FLAGS.FOF_NO_UI, // 元に戻すを有効。かつUI表示無し
                             pFrom = filePath + "\0"
                         };

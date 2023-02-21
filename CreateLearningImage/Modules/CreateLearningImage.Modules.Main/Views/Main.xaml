@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CreateLearningImage.Modules.Main.Views.Main"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:s="clr-namespace:System;assembly=mscorlib"
@@ -6,16 +6,18 @@
              xmlns:local="clr-namespace:CreateLearningImage.Modules.Main.Views"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="CreateLearningImage.Modules.Main.Views.Main"
              metro:DialogParticipation.Register="{Binding}"
-             prism:ViewModelLocator.AutoWireViewModel="True" >
+             prism:ViewModelLocator.AutoWireViewModel="True" av:DesignWidth="492.187" >
 
     <UserControl.Resources>
         <s:Boolean x:Key="True">True</s:Boolean>
         <s:Boolean x:Key="False">False</s:Boolean>
     </UserControl.Resources>
-    
+
     <Grid Margin="5">
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -26,19 +28,19 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
+
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <TextBlock Text="Learning Data:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <RadioButton IsChecked="{Binding IsLearning.Value}"/>
             <TextBlock Text="Test Data:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <RadioButton IsChecked="{Binding IsTest.Value}"></RadioButton>
+            <RadioButton IsChecked="{Binding IsTest.Value}"/>
 
             <TextBlock Text="Capter timing(ms)" Margin="30,5,5,5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <metro:NumericUpDown Margin="5" Width="100"
                                  Minimum="1"
                                  Value="{Binding Timing.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
-        
+
         <DockPanel Grid.Row="1" Grid.Column="0" LastChildFill="True">
             <TextBlock Text="Movie path:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <Button Content="Browse" Margin="5" DockPanel.Dock="Right" 
@@ -66,9 +68,23 @@
             <TextBox Text="{Binding Output.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center" Foreground="White"/>
         </DockPanel>
 
-        <Image Grid.Row="4" Grid.Column="0" Source="{Binding Images.Value}"/>
+        <DockPanel Grid.Row="4" Grid.Column="0" >
+            <TextBlock Text="Save file size Width:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBox Text="{Binding ResizeWidth.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" DockPanel.Dock="Left" VerticalAlignment="Center" Foreground="White"/>
+            <TextBlock Text="Height:" Margin="5" Foreground="White" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBox Text="{Binding ResizeHeight.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" Width="100" DockPanel.Dock="Left" VerticalAlignment="Center" Foreground="White"/>
 
-        <DockPanel Grid.Row="5" Grid.Column="0" Margin="5,0,5,0">
+            <Button DockPanel.Dock="Right" Content="Distribution"
+                    Command="{Binding DistributionCommand}"
+                    CommandParameter="{StaticResource True}"/>
+            
+            <!-- ダミー -->
+            <TextBlock />
+        </DockPanel>
+
+        <Image Grid.Row="5" Grid.Column="0" Source="{Binding Images.Value}"/>
+
+        <DockPanel Grid.Row="6" Grid.Column="0" Margin="5,0,5,0">
             <Button DockPanel.Dock="Left"
                           Width="48"
                           Height="48"
@@ -90,10 +106,6 @@
                                             Height="24"
                                             Kind="{Binding StartStopButtonName.Value}"/>
             </ToggleButton>
-
-            <Button DockPanel.Dock="Right" Content="Distribution"
-                    Command="{Binding DistributionCommand}"
-                    CommandParameter="{StaticResource True}"/>
 
             <!-- ダミー -->
             <TextBlock />

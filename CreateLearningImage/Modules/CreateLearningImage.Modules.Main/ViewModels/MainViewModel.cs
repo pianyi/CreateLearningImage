@@ -89,6 +89,16 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         public ReactiveProperty<bool> IsStart { get; set; }
 
         /// <summary>
+        /// 保存時の画像サイズ(幅)
+        /// </summary>
+        public ReactiveProperty<int> ResizeWidth { get; set; }
+
+        /// <summary>
+        /// 保存時の画像サイズ(高さ)
+        /// </summary>
+        public ReactiveProperty<int> ResizeHeight { get; set; }
+
+        /// <summary>
         /// ファイル選択ダイアログ表示
         /// </summary>
         public ReactiveCommand<string> BrowseFileCommand { get; set; }
@@ -99,6 +109,11 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         public ReactiveCommand BrowseDirectoryCommand { get; set; }
 
         /// <summary>
+        /// 振り分け用ダイアログ表示
+        /// </summary>
+        public ReactiveCommand<bool> DistributionCommand { get; set; }
+
+        /// <summary>
         /// 最初に戻るボタン
         /// </summary>
         public ReactiveCommand StepBackwradCommand { get; set; }
@@ -107,11 +122,6 @@ namespace CreateLearningImage.Modules.Main.ViewModels
         /// 再生・一時停止ボタン
         /// </summary>
         public AsyncReactiveCommand StartStopCommand { get; set; }
-
-        /// <summary>
-        /// 振り分け用ダイアログ表示
-        /// </summary>
-        public ReactiveCommand<bool> DistributionCommand { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -146,6 +156,12 @@ namespace CreateLearningImage.Modules.Main.ViewModels
             Output = MainControlService.Output
                                        .ToReactivePropertyAsSynchronized(e => e.Value)
                                        .AddTo(Disposables);
+            ResizeWidth = MainControlService.ResizeWidth
+                                            .ToReactivePropertyAsSynchronized(e => e.Value)
+                                            .AddTo(Disposables);
+            ResizeHeight = MainControlService.ResizeHeight
+                                             .ToReactivePropertyAsSynchronized(e => e.Value)
+                                             .AddTo(Disposables);
             Images = MainControlService.Images
                                        .ToReactivePropertySlimAsSynchronized(e => e.Value)
                                        .AddTo(Disposables);
@@ -273,7 +289,7 @@ namespace CreateLearningImage.Modules.Main.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.Error("再生できないデータです。", ex);
+                _logger.Error($"再生できないデータです。{ex.Message}", ex.StackTrace);
                 DialogCoordinator.ShowModalMessageExternal(this,
                                                            "エラー",
                                                            "再生できませんでした。");
